@@ -1,3 +1,3 @@
 declare module 'stats' {
-    export function getMaxIndex(input: unknown, comparator: unknown): unknown;
+  export function getMaxIndex(input: unknown, comparator: unknown): unknown;
 }
