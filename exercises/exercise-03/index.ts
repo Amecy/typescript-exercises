@@ -53,11 +53,17 @@ const persons: Person[] = [
   { type: 'admin', name: 'Bruce Willis', age: 64, role: 'World saver' }
 ];
 
-function isAdmin(person: Person) {
-  return person.type === 'admin';
+/**
+ * 参考 类型保护： https://jkchao.github.io/typescript-book-chinese/typings/typeGuard.html#使用定义的类型保护
+ */
+
+// 用户自定义的类型保护函数，它只是一个返回值是类似 person is Admin 的函数
+function isAdmin(person: Person): person is Admin {
+  return person.hasOwnProperty('role');
 }
 
-function isUser(person: Person) {
+// 用户自定义的类型保护函数，它只是一个返回值是类似 person is User 的函数
+function isUser(person: Person): person is User {
   return person.type === 'user';
 }
 

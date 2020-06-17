@@ -71,11 +71,12 @@ function logPerson(person: Person) {
   );
 }
 
-function filterPersons(
+/* 条件 + 断言 */
+function filterPersons<T extends 'admin' | 'user'>(
   persons: Person[],
-  personType: string,
-  criteria: unknown
-): unknown[] {
+  personType: T,
+  criteria: Partial<User>
+) {
   return persons
     .filter(person => person.type === personType)
     .filter(person => {
@@ -83,8 +84,34 @@ function filterPersons(
       return criteriaKeys.every(fieldName => {
         return person[fieldName] === criteria[fieldName];
       });
-    });
+    }) as Array<T extends 'admin' ? Admin : User>;
 }
+
+/* 重载 */
+// function filterPersons(
+//   persons: Person[],
+//   personType: 'admin',
+//   criteria: Partial<Person>
+// ): Array<Admin>;
+// function filterPersons(
+//   persons: Person[],
+//   personType: 'user',
+//   criteria: Partial<Person>
+// ): Array<User>;
+// function filterPersons(
+//   persons: Person[],
+//   personType: string,
+//   criteria: Partial<Person>
+// ): Array<Admin | User> {
+//   return persons
+//     .filter(person => person.type === personType)
+//     .filter(person => {
+//       let criteriaKeys = Object.keys(criteria) as (keyof Person)[];
+//       return criteriaKeys.every(fieldName => {
+//         return person[fieldName] === criteria[fieldName];
+//       });
+//     });
+// }
 
 let usersOfAge23: User[] = filterPersons(persons, 'user', { age: 23 });
 let adminsOfAge23: Admin[] = filterPersons(persons, 'admin', { age: 23 });
