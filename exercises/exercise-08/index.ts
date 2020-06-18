@@ -68,41 +68,29 @@ const users: User[] = [
   { type: 'user', name: 'Kate Müller', age: 23, occupation: 'Astronaut' }
 ];
 
-type AdminsApiResponse =
-  | {
-      status: 'success';
-      data: Admin[];
-    }
-  | {
-      status: 'error';
-      error: string;
-    };
+type Response<T> = {
+  status: 'success' | 'error';
+  error?: string;
+  data: T extends number ? number : T[];
+};
 
-function requestAdmins(callback: (response: AdminsApiResponse) => void) {
+function requestAdmins(callback: (response: Response<Admin>) => void) {
   callback({
     status: 'success',
     data: admins
   });
 }
 
-type UsersApiResponse =
-  | {
-      status: 'success';
-      data: User[];
-    }
-  | {
-      status: 'error';
-      error: string;
-    };
-
-function requestUsers(callback: (response: UsersApiResponse) => void) {
+function requestUsers(callback: (response: Response<User>) => void) {
   callback({
     status: 'success',
     data: users
   });
 }
 
-function requestCurrentServerTime(callback: (response: unknown) => void) {
+function requestCurrentServerTime(
+  callback: (response: Response<number>) => void
+) {
   callback({
     status: 'success',
     data: Date.now()
@@ -110,7 +98,7 @@ function requestCurrentServerTime(callback: (response: unknown) => void) {
 }
 
 function requestCoffeeMachineQueueLength(
-  callback: (response: unknown) => void
+  callback: (response: Partial<Response<never>>) => void
 ) {
   callback({
     status: 'error',
@@ -150,9 +138,7 @@ function startTheApp(callback: (error: Error | null) => void) {
       requestCurrentServerTime(serverTimeResponse => {
         console.log(chalk.yellow('Server time:'));
         if (serverTimeResponse.status === 'success') {
-          console.log(
-            `   ${new Date(serverTimeResponse.data).toLocaleString()}`
-          );
+          console.log(`${new Date(serverTimeResponse.data).toLocaleString()}`);
         } else {
           return callback(new Error(serverTimeResponse.error));
         }
@@ -162,7 +148,7 @@ function startTheApp(callback: (error: Error | null) => void) {
         requestCoffeeMachineQueueLength(coffeeMachineQueueLengthResponse => {
           console.log(chalk.yellow('Coffee machine queue length:'));
           if (coffeeMachineQueueLengthResponse.status === 'success') {
-            console.log(`   ${coffeeMachineQueueLengthResponse.data}`);
+            console.log(`${coffeeMachineQueueLengthResponse.data}`);
           } else {
             return callback(new Error(coffeeMachineQueueLengthResponse.error));
           }
