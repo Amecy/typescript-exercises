@@ -2,5 +2,13 @@
 import 'date-wizard';
 
 declare module 'date-wizard' {
-    // Add your module extensions here.
+  interface TimeDetails {
+    hours: number;
+    minutes: number;
+    seconds: number;
+  }
+
+  // Add your module extensions here.
+  function pad(s: string | number): string;
+  function dateDetails(d: Date): DateDetails & TimeDetails;
 }

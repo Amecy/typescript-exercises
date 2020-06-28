@@ -75,8 +75,16 @@ type ApiResponse<T> =
       error: string;
     };
 
-function promisify(arg: unknown): unknown {
-  return null;
+// T 代表 Admin[] 或 User[]
+type Callback<T> = (resData: ApiResponse<T>) => void;
+
+function promisify<T>(arg: (callback: Callback<T>) => void): () => Promise<T> {
+  return () =>
+    new Promise((resolve, reject) => {
+      arg(res => {
+        return res.status === 'success' ? resolve(res.data) : reject(res.error);
+      });
+    });
 }
 
 const oldApi = {
@@ -136,12 +144,12 @@ async function startTheApp() {
 
   console.log(chalk.yellow('Server time:'));
   console.log(
-    `   ${new Date(await api.requestCurrentServerTime()).toLocaleString()}`
+    `${new Date(await api.requestCurrentServerTime()).toLocaleString()}`
   );
   console.log();
 
   console.log(chalk.yellow('Coffee machine queue length:'));
-  console.log(`   ${await api.requestCoffeeMachineQueueLength()}`);
+  console.log(`${await api.requestCoffeeMachineQueueLength()}`);
 }
 
 startTheApp().then(
